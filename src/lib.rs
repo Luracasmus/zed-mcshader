@@ -1,22 +1,44 @@
+use std::path::Path;
+
 use zed_extension_api::{self as zed, Result, serde_json, settings::LspSettings};
 
-struct McshaderExtension;
+#[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct McshaderExtension {
+    cached_binary_path: Option<Box<str>>,
+}
 
 impl McshaderExtension {
     const LANGUAGE_SERVER_ID: &'static str = "mcshader";
 
     fn language_server_binary_path(&mut self, worktree: &zed::Worktree) -> Result<String> {
-        worktree
-            .which(Self::LANGUAGE_SERVER_ID)
-            .ok_or(String::from("mcshader LSP not found"))
+        Ok(
+            if let Some(cached_binary_path) = &self.cached_binary_path
+                && Path::new(cached_binary_path.as_ref()).exists()
+            {
+                (**cached_binary_path).to_owned()
+            } else {
+                let cached_binary_path = worktree
+                    .which(Self::LANGUAGE_SERVER_ID)
+                    .ok_or(String::from(
+                        "`mcshader` language server binary not found in environment `PATH`",
+                    ))?
+                    .into_boxed_str();
 
-        // TODO: Download the server or something if it doesn't exist.
+                // TODO: Download the server or something if we can't find it.
+
+                self.cached_binary_path = Some(cached_binary_path.clone());
+
+                cached_binary_path.into_string()
+            },
+        )
     }
 }
 
 impl zed::Extension for McshaderExtension {
     fn new() -> Self {
-        Self
+        Self {
+            cached_binary_path: None,
+        }
     }
 
     fn language_server_command(
