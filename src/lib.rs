@@ -39,7 +39,11 @@ impl zed::Extension for McshaderExtension {
         let settings = LspSettings::for_worktree(Self::LANGUAGE_SERVER_ID, worktree)
             .ok()
             .and_then(|lsp_settings| lsp_settings.settings.clone())
-            .unwrap_or_default();
+            .unwrap_or(serde_json::json!({
+                "logLevel": "info",
+                "extraExtension": ["inc"],
+                "tempLint": false
+            }));
 
         Ok(Some(serde_json::json!({
             Self::LANGUAGE_SERVER_ID: settings
