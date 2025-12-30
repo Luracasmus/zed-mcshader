@@ -1,11 +1,11 @@
 id = "zed-mcshader"
 name = "Language Server for Minecraft Shaderpacks"
-description = "Iris GLSL shader pack support through vscode_mcshader."
+description = "Iris GLSL shader pack support through the mcshader language server."
 version = "0.1.0"
 schema_version = 1
 authors = ["Luracasmus"]
 repository = "https://github.com/Luracasmus/zed-mcshader"
 
-[language_servers.vscode-mcshader]
-name = "vscode-mcshader"
+[language_servers.mcshader]
+name = "mcshader"
 language = "GLSL"
