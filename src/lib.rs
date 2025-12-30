@@ -26,8 +26,8 @@ impl zed::Extension for McshaderExtension {
     ) -> Result<zed::Command> {
         Ok(zed::Command {
             command: self.language_server_binary_path(worktree)?,
-            args: vec![],
-            env: vec![(String::from("RUST_BACKTRACE"), String::from("1"))],
+            args: Default::default(),
+            env: Default::default(),
         })
     }
 
